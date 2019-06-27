@@ -25,10 +25,11 @@ i.e., for example,
 (With `awk`, `-v x=1` or `-vx=1` sets the variable `x`.) The user needs to pick a (reasonable) accretion radius `Ra`. There are a few parameters in the script. Most are minor but the time zero location makes some difference (try changing it).
 
 Reasonable parameter combinations are maybe
-- Ld=0 (this is less certain; 1e-2 Lsol could also be worth a try)
-- dMdt=1e-4--1e ME/an
-- MP=1--10 MJ
-- RP=1.5--3 RJ
+- Ld = 0--1e-2 # Lsol (0 is probably usually more relevant)
+- dMdt = 1e-4--1e-2 # ME/an
+- MP = 1--10 # MJ
+- RP = 1.5--3 # RJ
+
 
 See also [Mordasini et al. (2017), "Characterization of exoplanets from their formation. III. The statistics of planetary luminosities"](http://adsabs.harvard.edu/abs/2017A%26A...608A..72M) for an idea of what internal luminosities could be during formation.
 
