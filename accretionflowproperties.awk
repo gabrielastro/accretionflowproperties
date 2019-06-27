@@ -41,6 +41,9 @@ function header() {
     print " # -------------------"
     print " #   Output"
     print " #     RJ = 7.15e9 cm"
+    print " #     t: time to reach the corresponding position with t=t0 (usually =0) at r=r0 (usually =rmax)"
+    print " #     t1, t2, t3: estimates of the time to reach the position (just for comparison)"
+    print " #     tff: local free-fall time (just for comparison)"
     print " # -------------------"
     print " #-1:i      2:t/s    3:r/RJ   4:rho/(g/cm^3)     5:T(K)  6:v/(km/s)       7:t1/s      8:t2/s      9:t3/s    10:tff/s"
 }
