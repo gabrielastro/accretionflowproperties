@@ -8,7 +8,7 @@ In the current version, we assume
 3. Equal temperatures before and after the shock
 4. No dissociation or ionisation
 
-This means that the temperature in the flow could be a bit larger if kappa\*rho\*r is large. Assumption 1. is of course not realistic far from the planet. Assumption 3. has always been seen to hold up to now.
+This means that the temperature in the flow could be a bit larger if kappa\*rho\*r is large. Assumption 1 is of course not realistic far from the planet. Assumption 3 has always been seen to hold up to now.
 
 Note that the shock temperature is independent of Assumption 4 but that dissociation or ionisation will change somewhat the temperature structure and the luminosity in the flow.
 
