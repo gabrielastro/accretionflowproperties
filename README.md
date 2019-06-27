@@ -24,6 +24,19 @@ i.e., for example,
 ```
 (With `awk`, `-v x=1` or `-vx=1` sets the variable `x`.) The user needs to pick a (reasonable) accretion radius `Ra`. There are a few parameters in the script. Most are minor but the time zero location makes some difference (try changing it).
 
+Reasonable parameter combinations are maybe
+- Ld=0 (this is less certain; 1e-2 Lsol could also be worth a try)
+- dMdt=1e-4--1e ME/an
+- MP=1--10 MJ
+- RP=1.5--3 RJ
+
+See also [Mordasini et al. (2017), "Characterization of exoplanets from their formation. III. The statistics of planetary luminosities"](http://adsabs.harvard.edu/abs/2017A%26A...608A..72M) for an idea of what internal luminosities could be during formation.
+
+**Reminder**: The output of the script, in particular the temperature, will be approximate (in fact, most likely a lower bound)
+because both the formulae (spherical symmetry and even then, simple result only;
+in [Paper II](https://ui.adsabs.harvard.edu/abs/2019arXiv190605869M) we give a more exact result)
+but also the input (parameter values) are approximate.
+
 ## References
 The equations used are to be found in
 [Paper I: Marleau et al. (2017)](http://adsabs.harvard.edu/abs/2017ApJ...836..221M) and
