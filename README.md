@@ -45,6 +45,6 @@ The equations used are to be found in
 [Paper I: Marleau et al. (2017)](http://adsabs.harvard.edu/abs/2017ApJ...836..221M) and
 [Paper II: Marleau et al. (2019)](https://ui.adsabs.harvard.edu/abs/2019arXiv190605869M)
 with the exception of the flow time between two points, which comes from the integral of `dt = dr / v`
-with `v = sqrt(2 G MP (1/r - 1/Ra)`. (An appropriate change of variables is needed for the integral...
+with `v = sqrt(2 G MP (1/r - 1/Ra))`. (An appropriate change of variables is needed for the integral...
 See e.g. http://www.astro.uu.se/~hoefner/astro/teach/apd_files/apd_collapse.pdf.)
 
