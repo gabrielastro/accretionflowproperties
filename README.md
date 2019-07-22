@@ -1,13 +1,13 @@
 _JMJ-V!_
 
 # accretionflowproperties
-Computes properties of the accretion flow onto a forming gas giant or its circumplanetary disc (CPD)
+Computes properties of the accretion flow onto a forming gas giant
 
 _by Gabriel-Dominique Marleau, Universität Tübingen_
 
+The main file is [accretionflowproperties.awk](accretionflowproperties.awk).
+
 ## Assumptions
-### Planetary-shock case
-The file is [accretionflowproperties.awk](accretionflowproperties.awk).
 
 In the current version for the planetary shock case, we assume:
 1. Spherical symmetry
@@ -18,11 +18,6 @@ In the current version for the planetary shock case, we assume:
 This means that the temperature in the flow could be a bit larger if kappa\*rho\*r is large. Assumption 1 is of course not realistic far from the planet. Assumption 3 has always been seen to hold up to now.
 
 Note that the shock temperature is independent of Assumption 4 (except perhaps for rare cases; Marleau et al., in prep.) but that dissociation or ionisation will change somewhat the temperature structure and the luminosity in the flow.
-
-### CPD-shock case
-The file is [accretionflowproperties_aboveCPD.awk](accretionflowproperties_above.awk).
-
-In the case of the CPD-surface shock case, because of the very unknown shock geometry, we just set a constant density and temperature above the CPD. Assumptions 2.--3. from above are kept
 
 
 ## Execution
