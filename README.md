@@ -17,12 +17,13 @@ In the current version for the planetary shock case, we assume:
 3. Equal temperatures before and after the shock
 4. No dissociation nor ionisation
 
-This means that the temperature in the flow could be a bit larger if kappa\*rho\*r is large (see Paper II). Assumption 1 is of course not realistic far from the planet. Assumption 3 has always been seen to hold up to now.
+This means that the temperature in the flow, and in particular at the shock, could be a bit larger if kappa\*rho\*r is large; this will typically be the case below the dust destruction tempeature (see Paper II, e.g., Fig. 7). Assumption 1 is of course not realistic far from the planet. Assumption 3 has always been seen to hold up to now.
 
 Note that the shock temperature is independent of Assumption 4 (except perhaps for rare cases; Marleau et al., in prep.) but that dissociation or ionisation will change somewhat the temperature structure and the luminosity in the flow.
 
 ## Input and output
 The input quantities are:
+- filling factor ffill
 - accretion rate dM/dt
 - planet mass MP
 - planet radius = shock position RP
@@ -48,16 +49,19 @@ The output quantities are, as a function of time or position:
 ## Execution
 To run, call (shown on two lines just for display purposes)
 ```
-./accretionflowproperties.awk  -v dMdt=<dM/dt (ME/yr)>  -v MP=<Mp (MJ)>  \
+./accretionflowproperties.awk  -v ffill=<ffill>  -v dMdt=<dM/dt (ME/yr)>  -v MP=<Mp (MJ)>  \
     -v RP=<Rp (RJ)>  -v Ld=<Ldownstr (Lsol)>  -v Ra=<Racc (RJ)>
 ```
 i.e., for example,
 ```
-./accretionflowproperties.awk -vdMdt=1e-2 -vMP=1 -vRP=2 -vLd=0 -vRa=123
+./accretionflowproperties.awk -vffill=1 -vdMdt=1e-2 -vMP=1 -vRP=2 -vLd=0 -vRa=123
 ```
-(With `awk`, `-v x=33` or `-vx=33` assigns the value 33 to the variable `x`.) The user needs to pick a (reasonable) accretion radius `Ra`. There are a few parameters in the script. Most are minor but the time zero location makes some difference (try changing it).
+(With `awk`, `-v x=33` or `-vx=33` assigns the value 33 to the variable `x`.) The output will be printed to screen.
+
+The user needs to pick a (reasonable) accretion radius `Ra`. There are a few parameters in the script. Most are minor but the time zero location makes some difference (try changing it).
 
 Reasonable parameter combinations are maybe
+- `ffill = 0.01--1` (1: spherically symmetric; 0.01: magnetospheric accretion)
 - `Ld = 0--1e-2 # Lsol` (0 is probably usually more relevant)
 - `dMdt = 1e-4--1e-2 # ME/an`
 - `MP = 1--10 # MJ`

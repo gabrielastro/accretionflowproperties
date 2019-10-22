@@ -32,12 +32,13 @@ function header() {
     print " # -------------------"
     print " #   Input"
     print " # -------------------"
-    print " # dMdt, MP, RP, Ld, Ra; rmax = ",dMdt/(ME/an), MP/MJ, RP/RJ, Ld/Lsol, Ra/RJ, rmax/RJ
-    print " #   dMdt: accretion rate (ME/an)"
-    print " #     MP: planet mass (MJ)"
-    print " #     RP: planet radius (RJ)"
-    print " #     Ld: downstream luminosity (Lsol)"
-    print " #     Ra: 'accretion radius' (RJ)"
+    print " #  ffill: filling factor (-)              = " ffill
+    print " #   dMdt: accretion rate (ME/an)          = " dMdt
+    print " #     MP: planet mass (MJ)                = " MP
+    print " #     RP: planet radius (RJ)              = " RP
+    print " #     Ld: downstream luminosity (Lsol)    = " Ld
+    print " #     Ra: 'accretion radius' (RJ)         = " Ra
+    print " # Numerical: notime, N, rmax/7.15e9: ", notime, N, rmax/7.15e9
     print " # -------------------"
     print " #   Output"
     print " #     RJ = 7.15e9 cm"
@@ -49,7 +50,7 @@ function header() {
 }
 
 BEGIN{
-  if(length(dMdt)*length(MP)*length(RP)*length(Ld)*length(Ra) == 0){
+  if(length(dMdt)*length(MP)*length(RP)*length(Ld)*length(Ra)*length(ffill) == 0){
     print " # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     print " # !!  At least one parameter is not set  !!"
     print " # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
@@ -73,15 +74,22 @@ BEGIN{
     print " #   Usage:"
     print " # -------------------"
     print " # "
-    print " #  ./accretionflowproperties.awk -v dMdt=<dM/dt (ME/yr)>  -v MP=<Mp (MJ)>  -v RP=<Rp (RJ)>  -v Ld=<Ldownstr (Lsol)> -v Ra=<Racc (RJ)>"
+    print " #  ./accretionflowproperties.awk -v ffill=<ffill> -v dMdt=<dM/dt (ME/yr)>  -v MP=<Mp (MJ)>  -v RP=<Rp (RJ)> \ "
+    print " #           -v Ld=<Ldownstr (Lsol)> -v Ra=<Racc (RJ)>"
     print " # "
-    print " # e.g.:   ./accretionflowproperties.awk -vdMdt=1e-2 -vMP=1 -vRP=2 -vLd=0 -vRa=123"
+    print " # e.g.:   ./accretionflowproperties.awk -vffill=1 -vdMdt=1e-2 -vMP=1 -vRP=2 -vLd=0 -vRa=123"
     print " #         (-v x=1 or -vx=1  defines and sets a variable)"
     print " # where Ld is the luminosity downstream of the shock = Lint + Lcomp = internal + compression luminosity, and"
     print " #       Ra is the accretion radius (Paper I), which could be computed somewhat self-consistently"
     print " # "
+    print " # Use the option `-v notime=1` to skip the computation of the exact time, which is what makes the script so slow"
+    print " # "
+    print " # Comments:"
     print " #   * Lint ~ 0 is fine for high accretion rates but is not negligible for lower dM/dt"
     print " #   * Lcomp is not easy to estimate a priori but is also probably not too high..."
+    print " #   * With filling factors ffill < 1, one can estimate properties in the accretion column"
+    print " #     towards a planet accreting magnetospherically"
+    print " #   * Note that for r > (3/4)*Ra, the density reincreases outwards"
     print " # "
 
     header()
@@ -89,6 +97,21 @@ BEGIN{
     print " # "
     exit 1
   }
+
+
+# 
+# optional quantities (numerical settings)
+# 
+# number of radial points minus 1
+if (length(N) == 0) { N = 100 }
+
+# skip computation of exact time? This computation makes the script slow
+#   default: do compute
+if (length(notime) == 0) { notime = 0 }
+
+
+# print information before unit conversion
+header()
 
 # ----------------
 #  constants
@@ -110,29 +133,25 @@ MP = MP * MJ
 RP = RP * RJ
 Ld = Ld * Lsol
 Ra = Ra * RJ
+ffill = ffill  # this is obviously dimensionless
 
-# number of radial points minus 1
-N = 100
-
-# skip computation of exact time? This computation makes the script slow
-notime = 0
 
 # outer radius of grid, < Ra
-#   note that the velocity is monotonic only out to 3/4*Racc but this does not matter
+#   note that the density is monotonic only out to 3/4*Racc but this does not matter
 rmax = 0.99 *Ra
 
 # luminosity just above the shock
 Ltot = G*MP*dMdt/RP + Ld
 
 # free-streaming temperature at the shock (downstream + accretion)
-Tshff = ( Ltot/(4*pi*RP^2.) / (4*sigSB) )^0.25
+Tshff = ( Ltot/(4*pi*RP^2.*ffill) / (4*sigSB) )^0.25
 
-# print information
-header()
+# check grid
 if(N / log10(Ra/RP) < 10){
     print " # * ACTHUNG: " N " points for " log10(Ra/RP) " dex: not very good resolution for integration! *"
 }
 
+# 
 # print out every layer from outside in, from rmax down to RP
 #   apart for the numerical integration of the time,
 #   every layer is independent of the others
@@ -167,7 +186,7 @@ for(i=0;i<=N;i++){
   if(notime==0) {
     t  = t0 + x*( theIntegral(y0) - theIntegral(y) )
   } else {
-    t  = 0.
+    t  = -33.  # serves as a flag
   }
   ## 
   ## free-fall from infinity vff = -sqrt(2 G MP / r), exact result, analytic
@@ -198,7 +217,7 @@ for(i=0;i<=N;i++){
   vff = - sqrt(2*G*MP*(1./r - 1./Ra))
   
   # free-fall density
-  rhoff = dMdt/(4*pi*r^2. * -vff)
+  rhoff = dMdt/(4*pi*r^2.*ffill * -vff)
   
   # temperature, assuming T \propto (r/RP)^{-1/2} and a free-streaming shock temperature
   T = Tshff * (RP/r)^0.5
