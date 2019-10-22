@@ -1,7 +1,9 @@
 _JMJ-V!_
 
 # accretionflowproperties
-Computes properties of the accretion flow onto a forming gas giant
+Computes approximate properties of the accretion flow onto a forming gas giant:
+density, temperature, velocity as a function of radius and time since the beginning
+of the fall.
 
 _by Gabriel-Dominique Marleau, Universität Tübingen_
 
@@ -11,13 +13,36 @@ The main file is [accretionflowproperties.awk](accretionflowproperties.awk).
 
 In the current version for the planetary shock case, we assume:
 1. Spherical symmetry
-2. Free-streaming shock temperature everywhere ([Paper II](https://ui.adsabs.harvard.edu/abs/2019arXiv190605869M), Eq. (33))
+2. Free-streaming shock temperature everywhere ([Paper II](http://adsabs.harvard.edu/abs/2019ApJ...881..144M), Eq. (33))
 3. Equal temperatures before and after the shock
 4. No dissociation nor ionisation
 
-This means that the temperature in the flow could be a bit larger if kappa\*rho\*r is large. Assumption 1 is of course not realistic far from the planet. Assumption 3 has always been seen to hold up to now.
+This means that the temperature in the flow could be a bit larger if kappa\*rho\*r is large (see Paper II). Assumption 1 is of course not realistic far from the planet. Assumption 3 has always been seen to hold up to now.
 
 Note that the shock temperature is independent of Assumption 4 (except perhaps for rare cases; Marleau et al., in prep.) but that dissociation or ionisation will change somewhat the temperature structure and the luminosity in the flow.
+
+## Input and output
+The input quantities are:
+- accretion rate dM/dt
+- planet mass MP
+- planet radius = shock position RP
+- downstream luminosity Ld
+- accretion radius Ra
+
+Ld is the luminosity left of the shock = internal luminosity + post-shock compression of the material,
+and needs to be determined by some other means; taking Ld=0 (in the sense << L_acc) is usually fine.
+See also [Berardo et al. (2017)](http://adsabs.harvard.edu/abs/2017ApJ...834..149B).
+
+Ra is the "accretion radius" in the sense that v_free-fall(r) = sqrt[ 2 G MP * (1/r - 1/Ra) ].
+
+The output quantities are, as a function of time or position:
+- time since the accretion radius
+- radial position (distance from planet centre)
+- density
+- temperature
+- velocity
+- crude estimates of the time coordinate, for comparison
+- local free-fall time
 
 
 ## Execution
@@ -49,7 +74,7 @@ but also the input (parameter values) are approximate.
 ## References
 The equations used are to be found in
 [Paper I: Marleau et al. (2017)](http://adsabs.harvard.edu/abs/2017ApJ...836..221M) and
-[Paper II: Marleau et al. (2019)](https://ui.adsabs.harvard.edu/abs/2019arXiv190605869M)
+[Paper II: Marleau et al. (2019)](http://adsabs.harvard.edu/abs/2019ApJ...881..144M)
 with the exception of the flow time between two points, which comes from the integral of `dt = dr / v`
 with `v = sqrt(2 G MP (1/r - 1/Ra))`. (An appropriate change of variables is needed for the integral...
 See e.g. http://www.astro.uu.se/~hoefner/astro/teach/apd_files/apd_collapse.pdf.)
