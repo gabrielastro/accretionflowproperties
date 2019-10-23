@@ -13,13 +13,17 @@ The main file is [accretionflowproperties.awk](accretionflowproperties.awk).
 
 In the current version for the planetary shock case, we assume:
 1. Spherical symmetry
+2. Equal temperatures before and after the shock
+3. No dissociation nor ionisation
+
 2. Free-streaming shock temperature everywhere ([Paper II](http://adsabs.harvard.edu/abs/2019ApJ...881..144M), Eq. (33))
-3. Equal temperatures before and after the shock
-4. No dissociation nor ionisation
 
-This means that the temperature in the flow, and in particular at the shock, could be a bit larger if kappa\*rho\*r is large; this will typically be the case below the dust destruction tempeature (see Paper II, e.g., Fig. 7). Assumption 1 is of course not realistic far from the planet. Assumption 3 has always been seen to hold up to now.
+- Assumption 1 is of course not realistic far from the planet.
+- Assumption 2 has always been seen to hold up to now.
+- The shock temperature is independent of Assumption 3 (except perhaps for rare cases; Marleau et al., in prep.) but that dissociation or ionisation will change somewhat the temperature structure and the luminosity in the flow.
 
-Note that the shock temperature is independent of Assumption 4 (except perhaps for rare cases; Marleau et al., in prep.) but that dissociation or ionisation will change somewhat the temperature structure and the luminosity in the flow.
+In the current version (v.2), we now take roughly into account the effect of the dust opacity, which is important if locally kappa\*rho\*r is >~ 1; this will typically be the case below the dust destruction tempeature (see Paper II, e.g., Fig. 7). Given the uncertainties in the dust model, we use a constant kappa = 3 cm^2/g (cross-section per gram of _gas_). Caveat emptor: the simple smoothing used here (instead of actual solving implicity) has not been tested extensively!
+
 
 ## Input and output
 The input quantities are:
@@ -37,12 +41,12 @@ See also [Berardo et al. (2017)](http://adsabs.harvard.edu/abs/2017ApJ...834..14
 Ra is the "accretion radius" in the sense that v_free-fall(r) = sqrt[ 2 G MP * (1/r - 1/Ra) ].
 
 The output quantities are, as a function of time or position:
-- time since the accretion radius
+- time since the accretion radius (this makes the script slow; can be deactivated)
 - radial position (distance from planet centre)
 - density
 - temperature
 - velocity
-- crude estimates of the time coordinate, for comparison
+- crude estimates of the time coordinate, only for comparison
 - local free-fall time
 
 
@@ -83,3 +87,6 @@ with the exception of the flow time between two points, which comes from the int
 with `v = sqrt(2 G MP (1/r - 1/Ra))`. (An appropriate change of variables is needed for the integral...
 See e.g. http://www.astro.uu.se/~hoefner/astro/teach/apd_files/apd_collapse.pdf.)
 
+
+## Contact
+Corrections, comments, requests, and suggestions are all welcome! Please contact me at `uni-tuebingen.de`, with `gabriel.marleau` in front.
