@@ -16,17 +16,16 @@ In the current version for the planetary shock case, we assume:
 2. Equal temperatures before and after the shock
 3. No dissociation nor ionisation
 
-2. Free-streaming shock temperature everywhere ([Paper II](http://adsabs.harvard.edu/abs/2019ApJ...881..144M), Eq. (33))
-
 - Assumption 1 is of course not realistic far from the planet.
 - Assumption 2 has always been seen to hold up to now.
-- The shock temperature is independent of Assumption 3 (except perhaps for rare cases; Marleau et al., in prep.) but that dissociation or ionisation will change somewhat the temperature structure and the luminosity in the flow.
+- The shock temperature is independent of Assumption 3 (except perhaps for rare cases; Marleau et al., in prep.) but dissociation or ionisation will change somewhat the temperature structure and the luminosity in the flow.
 
-In the current version (v.2), we now take roughly into account the effect of the dust opacity, which is important if locally kappa\*rho\*r is >~ 1; this will typically be the case below the dust destruction tempeature (see Paper II, e.g., Fig. 7). Given the uncertainties in the dust model, we use a constant kappa = 3 cm^2/g (cross-section per gram of _gas_). Caveat emptor: the simple smoothing used here (instead of actual solving implicity) has not been tested extensively!
+In the current version (v.2), we now take roughly into account the effect of the dust opacity, which is important if locally kappa\*rho\*r is >~ 1; this will typically be the case below the dust destruction tempeature (see [Paper II](http://adsabs.harvard.edu/abs/2019ApJ...881..144M), e.g., Fig. 7). Given the uncertainties in the dust model, we use a constant kappa = 3 cm^2/g (cross-section per gram of _gas_). Caveat emptor: the simple smoothing used here (instead of actual solving implicity) has not been tested extensively!
 
 
 ## Input and output
-The input quantities are:
+### Required input
+The required input quantities are:
 - filling factor ffill
 - accretion rate dM/dt
 - planet mass MP
@@ -40,6 +39,15 @@ See also [Berardo et al. (2017)](http://adsabs.harvard.edu/abs/2017ApJ...834..14
 
 Ra is the "accretion radius" in the sense that v_free-fall(r) = sqrt[ 2 G MP * (1/r - 1/Ra) ].
 
+
+### Optional settings
+- rmaxfact=<rmax/Ra>    starting point of a parcel of gas as a fraction of the accretion radius; default: 0.99
+- kappa_nonzero=<0/1>   1 = consider opacity approximately for the temperature profile; 0 = assume free-streaming everywhere; default: 1
+- notime=<0/1>          1 = skip the computation of the exact time, which is what makes the script so slow; default: 0 = do not skip
+- N=<number of cells>   number of radial cells between rmax and the planet radius; default: 100
+
+
+### Output
 The output quantities are, as a function of time or position:
 - time since the accretion radius (this makes the script slow; can be deactivated)
 - radial position (distance from planet centre)
@@ -49,6 +57,7 @@ The output quantities are, as a function of time or position:
 - crude estimates of the time coordinate, only for comparison
 - local free-fall time
 
+The output will be printed to screen.
 
 ## Execution
 To run, call (shown on two lines just for display purposes)
@@ -58,14 +67,15 @@ To run, call (shown on two lines just for display purposes)
 ```
 i.e., for example,
 ```
-./accretionflowproperties.awk -vffill=1 -vdMdt=1e-2 -vMP=1 -vRP=2 -vLd=0 -vRa=123
+./accretionflowproperties.awk -vffill=1 -vdMdt=1e-2 -vMP=1 -vRP=2 -vLd=0 -vRa=240 -v rmaxfact=0.7
 ```
-(With `awk`, `-v x=33` or `-vx=33` assigns the value 33 to the variable `x`.) The output will be printed to screen.
+(With `awk`, `-v x=33` or `-vx=33` assigns the value 33 to the variable `x`.)
 
+- Note:
 The user needs to pick a (reasonable) accretion radius `Ra`. There are a few parameters in the script. Most are minor but the time zero location makes some difference (try changing it).
 
-Reasonable parameter combinations are maybe
-- `ffill = 0.01--1` (1: spherically symmetric; 0.01: magnetospheric accretion)
+Reasonable parameter ranges are maybe:
+- `ffill = 0.01--1` (1: spherically symmetric; e.g., 0.01: magnetospheric accretion)
 - `Ld = 0--1e-2 # Lsol` (0 is probably usually more relevant)
 - `dMdt = 1e-4--1e-2 # ME/an`
 - `MP = 1--10 # MJ`

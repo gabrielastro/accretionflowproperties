@@ -4,10 +4,12 @@
 # Gabriel-Dominique Marleau, Uni Tübingen
 # gabriel.marleau@uni-tuebingen.de
 # 
+# 
+# Compute approximate properties of a supersonic accretion flow towards a planet
+#   Run this script without arguments to get information
+# 
 # v.1: 26.06.2019
 # v.2: 23.10.2019
-# 
-# Run without arguments to get information
 # 
 # ----------------------------------------------------------------------
 
@@ -54,85 +56,88 @@ function setconstants() {
 
 }
 
-function header() {
+function printinfo() {
 
-    print " # Approximate accretion profile, free-streaming"
-    print " # -------------------"
-    print " #   Input"
-    print " # -------------------"
-    print " #  ffill: filling factor (-)              = " ffill
-    print " #   dMdt: accretion rate (ME/an)          = " dMdt
-    print " #     MP: planet mass (MJ)                = " MP
-    print " #     RP: planet radius (RJ)              = " RP
-    print " #     Ld: downstream luminosity (Lsol)    = " Ld
-    print " #     Ra: 'accretion radius' (RJ)         = " Ra
-    print " # --------------------"
-    print " #   Input, more"
-    print " #     kappa: take_opacity_into_account, kappa0 = ", take_opacity_into_account, kappa0
-    print " #     Numerical: notime, N, rmax/7.15e9 = ", notime, N, rmax/7.15e9
-    print " # -------------------"
-    print " #   Output"
-    print " #     RJ = 7.15e9 cm"
-    print " #     t: time to reach the corresponding position with t=t0 (usually =0) at r=r0 (usually =rmax)"
-    print " #     t1, t2, t3: estimates of the time to reach the position (just for comparison)"
-    print " #     tff: local free-fall time (just for comparison)"
-    print " # -------------------"
-    print " #-1:i      2:t/s    3:r/RJ   4:rho/(g/cm^3)     5:T(K)  6:v/(km/s)       7:t1/s      8:t2/s      9:t3/s    10:tff/s"
+    print "# ---------------------------------------------------------------------------------------------------"
+    print "# Quantities in an approximate 1D accretion profile"
+    print "# ---------------------------------------------------------------------------------------------------"
+    print "#   Input"
+    print "# ---------------------------------------------------------------------------------------------------"
+    print "#  ffill: filling factor (-)              = " ffill
+    print "#   dMdt: accretion rate (ME/an)          = " dMdt
+    print "#     MP: planet mass (MJ)                = " MP
+    print "#     RP: planet radius (RJ)              = " RP
+    print "#     Ld: downstream luminosity (Lsol)    = " Ld
+    print "#     Ra: 'accretion radius' (RJ)         = " Ra
+    print "# ---------------------------------------------------------------------------------------------------"
+    print "#   Input, more"
+    print "#     kappa_nonzero, kappa0  = ", kappa_nonzero, kappa0
+    print "#     rmax/Ra, notime, N = ", rmaxfact, notime, N
+    print "# ---------------------------------------------------------------------------------------------------"
+    print "#   Output"
+    print "#     RJ = 7.15e9 cm"
+    print "#     t: time to reach the corresponding position with t=t0 (usually =0) at r=r0 (usually =rmax)"
+    print "#     t1, t2, t3: estimates of the time to reach the position (just for comparison)"
+    print "#     tff: local free-fall time (just for comparison)"
+    print "# ---------------------------------------------------------------------------------------------------"
 }
 
 BEGIN{
   
-  # need constants for header() and main code
+  # need constants for printinfo() and main code
   setconstants()
   
-  if(length(dMdt)*length(MP)*length(RP)*length(Ld)*length(Ra)*length(ffill) == 0){
-    print " # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    print " # !!  At least one parameter is not set  !!"
-    print " # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    print " #"
-    print " # ---------------------------------------------------------------------------"
-    print " #   Prints out estimated properties of the accretion flow onto a planet      "
-    print " # ---------------------------------------------------------------------------"
-    print " # "
-    print " # References: Marleau et al. (2017, 2019)"
-    print " #  http://adsabs.harvard.edu/abs/2017ApJ...836..221M (Paper I)"
-    print " #  https://ui.adsabs.harvard.edu/abs/2019arXiv190605869M (Paper II)"
-    print " # "
-    print " # Assumptions of the current version:"
-    print " #   - Spherical symmetry"
-    print " #   - Equal temperatures before and after the shock"
-    print " # "
-    print " # The model is certainly not realistic at large distances from the planet!"
-    print " # "
-    print " # Now, in v.2, we do not assume a free-streaming shock temperature everywhere"
-    print " #   but rather correct roughly for the effect of the dust opacity."
-    print " #   Note that this has not been tested in detail!"
-    print " # "
-    print " # -------------------"
-    print " #   Usage:"
-    print " # -------------------"
-    print " # "
-    print " #  ./accretionflowproperties.awk -v ffill=<ffill> -v dMdt=<dM/dt (ME/yr)>  -v MP=<Mp (MJ)>  -v RP=<Rp (RJ)> \ "
-    print " #           -v Ld=<Ldownstr (Lsol)> -v Ra=<Racc (RJ)>"
-    print " # "
-    print " # e.g.:   ./accretionflowproperties.awk -vffill=1 -vdMdt=1e-2 -vMP=1 -vRP=2 -vLd=0 -vRa=123"
-    print " #         (-v x=1 or -vx=1  defines and sets a variable)"
-    print " # where Ld is the luminosity downstream of the shock = Lint + Lcomp = internal + compression luminosity, and"
-    print " #       Ra is the accretion radius (Paper I), which could be computed somewhat self-consistently"
-    print " # "
-    print " # Use the option `-v notime=1` to skip the computation of the exact time, which is what makes the script so slow"
-    print " # "
-    print " # Comments:"
-    print " #   * Lint ~ 0 is fine for high accretion rates but is not negligible for lower dM/dt"
-    print " #   * Lcomp is not easy to estimate a priori but is also probably not too high..."
-    print " #   * With filling factors ffill < 1, one can estimate properties in the accretion column"
-    print " #     towards a planet accreting magnetospherically"
-    print " #   * Note that for r > (3/4)*Ra, the density reincreases outwards"
-    print " # "
+  if(length(ffill)*length(dMdt)*length(MP)*length(RP)*length(Ld)*length(Ra) == 0){
+    print "# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    print "# !!  At least one parameter is not set  !!"
+    print "# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    print "#"
+    print "# ---------------------------------------------------------------------------"
+    print "#   Prints out estimated properties of the accretion flow onto a planet      "
+    print "# ---------------------------------------------------------------------------"
+    print "# "
+    print "# References: Marleau et al. (2017, 2019)"
+    print "#  http://adsabs.harvard.edu/abs/2017ApJ...836..221M (Paper I)"
+    print "#  http://adsabs.harvard.edu/abs/2019ApJ...881..144M (Paper II)"
+    print "# "
+    print "# Assumptions of the current version:"
+    print "#   - Spherical symmetry"
+    print "#   - Equal temperatures before and after the shock"
+    print "# "
+    print "# The model is certainly not realistic at large distances from the planet!"
+    print "# "
+    print "# Now, in v.2, we do not assume a free-streaming shock temperature everywhere"
+    print "#   but rather correct roughly for the effect of the dust opacity."
+    print "#   Note that this has not been tested in detail!"
+    print "# "
+    print "# -------------------"
+    print "#   Usage:"
+    print "# -------------------"
+    print "# "
+    print "#  ./accretionflowproperties.awk -v ffill=<ffill> -v dMdt=<dM/dt (ME/yr)>  -v MP=<Mp (MJ)>  -v RP=<Rp (RJ)>  -v Ld=<Ldownstr (Lsol)> -v Ra=<Racc (RJ)>"
+    print "# "
+    print "# e.g.:   ./accretionflowproperties.awk -vffill=1 -vdMdt=1e-2 -vMP=1 -vRP=2 -vLd=0 -vRa=240 -vrmaxfact=0.7"
+    print "#         (-v x=1 or -vx=1  defines and sets a variable)"
+    print "# where Ld is the luminosity downstream of the shock = Lint + Lcomp = internal + compression luminosity, and"
+    print "#       Ra is the accretion radius (Paper I), which could be computed somewhat self-consistently"
+    print "# "
+    print "# Optional settings:"
+    print "#   -v rmaxfact=<rmax/Ra>    starting point of a parcel of gas as a fraction of the accretion radius [default: 0.99]"
+    print "#   -v kappa_nonzero=<0/1>   1 = consider opacity approximately for the temperature profile; 0 = assume free-streaming everywhere [default: 1]"
+    print "#   -v notime=<0/1>          1 = skip the computation of the exact time, which is what makes the script so slow [default: 0 = do not skip]"
+    print "#   -v N=<number of cells>   number of radial cells between rmax and the planet radius [default: 100]"
+    print "# "
+    print "# Comments:"
+    print "#   * Lint ~ 0 is fine for high accretion rates but is not negligible for lower dM/dt"
+    print "#   * Lcomp is not easy to estimate a priori but is also probably not too high..."
+    print "#   * With filling factors ffill < 1, one can estimate properties in the accretion column"
+    print "#     towards a planet accreting magnetospherically"
+    print "#   * Note that for r > (3/4)*Ra, the density reincreases outwards"
+    print "# "
     
-    header()
+    printinfo()
 
-    print " # "
+    print "# "
     exit 1
   }
 
@@ -142,9 +147,14 @@ BEGIN{
 # optional quantities: further settings
 # 
 
-# take opacity into account?
+# factor for the outer radius of grid rmax (fraction < Ra)
+#   note that the density is monotonic only out to 3/4*Ra;
+#   it might be a good idea but is not necessary to start within this radius.
+if (length(rmaxfact) == 0) { rmaxfact = 0.99 }
+
+# take opacity into account? By default, yes (this is more accurate)
 #   This can increase the temperature in the flow
-if (length(take_opacity_into_account) == 0) { take_opacity_into_account = 1 }
+if (length(kappa_nonzero) == 0) { kappa_nonzero = 1 }
 
 # skip computation of exact time? This computation makes the script slow
 #   default: do compute
@@ -156,33 +166,35 @@ if (length(N) == 0) { N = 100 }
 # ----------------------------------------------
 
 # print information before unit conversion of variables
-header()
-
+printinfo()
 
 # ----------------
-#  convert units
+#  convert units of input and of some derived variables
 # ----------------
-dMdt = dMdt*ME/an
-MP = MP * MJ
-RP = RP * RJ
-Ld = Ld * Lsol
-Ra = Ra * RJ
+dMdt  = dMdt * ME/an
+MP    = MP   * MJ
+RP    = RP   * RJ
+Ld    = Ld   * Lsol
+Ra    = Ra   * RJ
 ffill = ffill  # this is obviously dimensionless
 
-# outer radius of grid, < Ra
-#   note that the density is monotonic only out to 3/4*Racc but this does not matter
-rmax = 0.99 *Ra
+# outer radius
+rmax = rmaxfact * Ra
 
 # luminosity just above the shock
-Ltot = G*MP*dMdt/RP + Ld
+Ltot = G*MP*dMdt/RP*sqrt(1-RP/1./Ra) + Ld
 
 # free-streaming temperature at the shock (downstream + accretion)
 Tshff = ( Ltot/(4*pi*RP^2.*ffill) / (4*sigSB) )^0.25
 
 # check grid
 if(N / log10(Ra/RP) < 10){
-    print " # * ACTHUNG: " N " points for " log10(Ra/RP) " dex: not very good resolution for integration! *"
+    print "# * ACTHUNG: " N " points for " log10(Ra/RP) " dex: not very good resolution for integration! *"
 }
+
+# print more information
+print "#   More information"
+print "#     Ltot (Lsol), Tshff (K): ", Ltot/Lsol, Tshff
 
 # 
 # print out every layer from outside in, from rmax down to RP
@@ -215,7 +227,7 @@ for(i=0;i<=N;i++){
   y0 = r0/Ra
   ##
   ## free-fall from Ra, exact, analytic
-  ##  calling theIntegral() is what makes the script slow!
+  ##  calling theIntegral() is what makes the script slow
   if(notime==0) {
     t  = t0 + x*( theIntegral(y0) - theIntegral(y) )
   } else {
@@ -257,11 +269,10 @@ for(i=0;i<=N;i++){
   
   # 
   # multiply by opacity factor (Eq. 32 of Paper II)
-  #   (compare the with Fig. 9b of Paper II)
-  #   Note: instead of finding the temperature implicitly self-consistently,
-  #   we use a rough approach
-  # 
-  if(take_opacity_into_account==1){
+  ##   (compare with Fig. 9b of Paper II)
+  ##   Note: instead of finding the temperature implicitly self-consistently,
+  ##   we use a rough approach
+  if(kappa_nonzero==1){
     
     Tdestloc = Tevap(rhoff)
     # use a step function for the opacity with a height ~ typical value
@@ -269,24 +280,29 @@ for(i=0;i<=N;i++){
     xkap = kappa*rhoff*r
     
     # from Eq. (35) of Paper II:
-    #   for the Ensman (1994) flux limiter:
+    ##   for the Ensman (1994) flux limiter:
     #fact = (1 + 3./2.*xkap)^0.25
-    #   for the Levermore & Pomraning (1981):
+    ##   for the Levermore & Pomraning (1981) flux limiter:
     fact = ( (1 + 3./2.*xkap + 3./2.*xkap^2.)/(1+xkap) )^0.25
     
     # this is the rough fit: below the destruction temperature,
-    #   take the minimum (with smoothing) of the two
+    ##   take the minimum (with smoothing) of the two
     if(T <= Tdestloc) {
-      #T = T * fact
       #T = min (Tdestloc, T * fact)
-      # a strong power matches well at least for the case of Fig. 9 in Paper II
+      ## a strong power matches well at least for the case of Fig. 9 in Paper II
       p = 10.
       T = ( 1./Tdestloc^p + 1/(T*fact)^p )^(-1/p)
     }
   
-  }  # end of take_opacity_into_account
+  }  # end of kappa_nonzero
   
-  # print to screen
+  if(i==0) {
+    # print header line
+    print "# ---------------------------------------------------------------------------------------------------"
+    print "#-1:i      2:t/s    3:r/RJ   4:rho/(g/cm^3)     5:T(K)  6:v/(km/s)       7:t1/s      8:t2/s      9:t3/s    10:tff/s"
+  }
+  
+  # print the layer
   printf " %4d  %10.3e  %8.3f  %15.4e  %9.2f  %10.3f   %10.3e  %10.3e  %10.3e  %10.3e\n",
       i, t, r/RJ, rhoff, T, vff/1e5, t1, t2, t3, tff
   
