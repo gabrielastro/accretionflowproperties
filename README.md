@@ -16,7 +16,7 @@ In the current version for the planetary shock case, we assume:
 2. Equal temperatures before and after the shock
 3. No dissociation nor ionisation
 
-- Assumption 1 is of course not realistic far from the planet.
+- Assumption 1 is of course not realistic far from the planet. In the case of ffill<1 (see below), the profile should be thought of as the average profile over the accreting solid angle.
 - Assumption 2 has always been seen to hold up to now.
 - The shock temperature is independent of Assumption 3 (except perhaps for rare cases; Marleau et al., in prep.) but dissociation or ionisation will change somewhat the temperature structure and the luminosity in the flow.
 
@@ -26,7 +26,7 @@ In the current version (v.2), we now take roughly into account the effect of the
 ## Input and output
 ### Required input
 The required input quantities are:
-- filling factor ffill
+- filling factor (fraction of planet surface covered by accretion) ffill
 - accretion rate dM/dt
 - planet mass MP
 - planet radius = shock position RP
@@ -45,6 +45,10 @@ Ra is the "accretion radius" in the sense that v_free-fall(r) = sqrt[ 2 G MP * (
 - kappa_nonzero=<0/1>   1 = consider opacity approximately for the temperature profile; 0 = assume free-streaming everywhere; default: 1
 - notime=<0/1>          1 = skip the computation of the exact time, which is what makes the script so slow; default: 0 = do not skip
 - N=<number of cells>   number of radial cells between rmax and the planet radius; default: 100
+
+Since the longest part of the infall is the early phase, the "time zero" location (`rmaxfact`)
+makes some difference on the total time to reach the planet (try changing it).
+Note that all other quantities are independent of time, however.
 
 
 ### Output
@@ -72,7 +76,8 @@ i.e., for example,
 (With `awk`, `-v x=33` or `-vx=33` assigns the value 33 to the variable `x`.)
 
 - Note:
-The user needs to pick a (reasonable) accretion radius `Ra`. There are a few parameters in the script. Most are minor but the time zero location makes some difference (try changing it).
+The user needs to pick a (reasonable) accretion radius `Ra`, e.g. Ra = 1/3 of the Hill sphere RH;
+this is 240 RJ for Jupiter at 5 au and 650 RJ for 20 MJ at 5 au.
 
 Reasonable parameter ranges are maybe:
 - `ffill = 0.01--1` (1: spherically symmetric; e.g., 0.01: magnetospheric accretion)
