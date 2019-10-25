@@ -79,8 +79,13 @@ function set_radius() {
 # for each variable: set a value or (in quotes:) a list
 #   e.g. M=$(echo 1 {2..10..2})
 
+# use the kappa*rho*r factor to calculate the temperature?
+kappa_nonzero=0
+# special tag for the kappa_nonzero=0 (i.e., kappa=0) mode
+if [ $kappa_nonzero == 0 ]; then extra="_kapAnfNull"; else extra=""; fi
+
 # the master (summary) file containing the file names and parameter settings:
-listofprofilefiles=Ausgabe/Listedatei_Sph+Polar.dat
+listofprofilefiles=Ausgabe/Listedatei_Sph+Polar$extra.dat
 
 Ra=200
 
@@ -101,10 +106,8 @@ RP="kalt  warm"
 # rmax/Ra:
 rmaxfact=0.7
 
-# optional settings (currently not loop variables!)
+# optional setting (currently not a loop variable!)
 notime=1
-
-take_opacity_into_account=1
 
 
 # =======================================================================================================
@@ -150,12 +153,12 @@ for xRa in $Ra; do
 						echo "            RP="$theRP
 						
 						# set output file (make sure to creat the subdirectory first)
-						outfile=Ausgabe/Profil_$xRP""_fF$xffill"_"$xMP""MJ_MPkt$xdMdt"_"$theRP""RJ_RAkk$xRa""_Ld$xLd.dat
+						outfile=Ausgabe/Profil_$xRP""_fF$xffill"_"$xMP""MJ_MPkt$xdMdt"_"$theRP""RJ_RAkk$xRa""_Ld$xLd""$extra.dat
 						echo " $outfile"
 						
 						# calculate the profile
 						./accretionflowproperties.awk \
-							-v rmaxfact=$rmaxfact -v notime=$notime -v take_opacity_into_account=$take_opacity_into_account \
+							-v rmaxfact=$rmaxfact -v notime=$notime -v kappa_nonzero=$kappa_nonzero \
 							-v ffill=$xffill -v dMdt=$xdMdt  -v MP=$xMP  -v RP=$theRP  -v Ld=$xLd -v Ra=$xRa >  $outfile
 						
 						
