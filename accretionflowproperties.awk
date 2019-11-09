@@ -182,7 +182,7 @@ ffill = ffill  # this is obviously dimensionless
 rmax = rmaxfact * Ra
 
 # luminosity just above the shock
-Ltot = G*MP*dMdt/RP*sqrt(1-RP/1./Ra) + Ld
+Ltot = G*MP*dMdt/RP*(1-RP/1./Ra) + Ld
 
 # free-streaming temperature at the shock (downstream + accretion)
 Tshff = ( Ltot/(4*pi*RP^2.*ffill) / (4*sigSB) )^0.25
