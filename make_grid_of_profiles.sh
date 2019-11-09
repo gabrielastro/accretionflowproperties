@@ -93,11 +93,11 @@ Ld=0
 
 ffill="1.0 0.3"
 
-# only integer powers for dMdt possible like this; for floating points, change variable to dMdt and adapt below
-lgdMdt=$( echo {-5..-1..1} )
+# lgdMdt=$( echo {-5..-1..1} )
+lgdMdt="-4.0  -3.5  -3.0  -2.5  -2.0  -1.5  -1.0"
 
-#MP=$( echo 1 {2..20..2} )
-MP="1 3 5 10 20"
+MP=$( echo 1 {2..20} )
+# MP="1 3 5 10 20"
 
 # the radius can be a mode ("cold" or "warm") or a radius, or a set of either or a combination thereof
 #   Examples: RP=cold; RP="cold warm"; RP="cold hot 2"
@@ -141,8 +141,7 @@ for xRa in $Ra; do
 				if [ $xRP == "warm" ]; then warm=1; elif [[ ( $xRP == "cold" || $xRP == "kalt" ) ]]; then warm=0; else warm=manual; fi
 				
 				for xlgdMdt in $lgdMdt; do
-					## currently we loop over the power of dMdt; this is used in the summary file too
-					xdMdt=1e$xlgdMdt
+					xdMdt=$(awk 'BEGIN{print 10^('$xlgdMdt')}')
 					
 					echo "         5================  dMdt = $xdMdt ME/yr) ================"
 					for xMP in $MP; do
@@ -153,7 +152,7 @@ for xRa in $Ra; do
 						echo "            RP="$theRP
 						
 						# set output file (make sure to creat the subdirectory first)
-						outfile=Ausgabe/Profil_$xRP""_fF$xffill"_"$xMP""MJ_MPkt$xdMdt"_"$theRP""RJ_RAkk$xRa""_Ld$xLd""$extra.dat
+						outfile=Ausgabe/Profil_$xRP""_fF$xffill"_"$xMP""MJ_lgMPkt$xlgdMdt"_"$theRP""RJ_RAkk$xRa""_Ld$xLd""$extra.dat
 						echo " $outfile"
 						
 						# calculate the profile
