@@ -62,6 +62,8 @@ function printinfo() {
     print "# Quantities in an approximate 1D accretion profile"
     print "# ---------------------------------------------------------------------------------------------------"
     print "#   Input"
+    print "#     Calling sequence:"
+    print "#  LC_ALL=C ./accretionflowproperties.awk -vffill=" ffill " -vdMdt=" dMdt " -vMP=" MP " -vRP=" RP " -vLd=" Ld " -vRa=" Ra " -vrmaxfact=" rmaxfact " -vkappa_nonzero=" kappa_nonzero " -vnotime=" notime " -vN=" N
     print "# ---------------------------------------------------------------------------------------------------"
     print "#  ffill: filling factor (-)              = " ffill
     print "#   dMdt: accretion rate (ME/an)          = " dMdt
@@ -72,7 +74,7 @@ function printinfo() {
     print "# ---------------------------------------------------------------------------------------------------"
     print "#   Input, more"
     print "#     kappa_nonzero, kappa0  = ", kappa_nonzero, kappa0
-    print "#     rmax/Ra, notime, N = ", rmaxfact, notime, N
+    print "#     rmaxfact=rmax/Ra, notime, N = ", rmaxfact, notime, N
     print "# ---------------------------------------------------------------------------------------------------"
     print "#   Output"
     print "#     RJ = 7.15e9 cm"
@@ -299,11 +301,11 @@ for(i=0;i<=N;i++){
   if(i==0) {
     # print header line
     print "# ---------------------------------------------------------------------------------------------------"
-    print "#-1:i      2:t/s    3:r/RJ   4:rho/(g/cm^3)     5:T(K)  6:v/(km/s)       7:t1/s      8:t2/s      9:t3/s    10:tff/s"
+    print "#-1:i        2:t/s    3:r/RJ   4:rho/(g/cm^3)     5:T(K)  6:v/(km/s)       7:t1/s      8:t2/s      9:t3/s    10:tff/s"
   }
   
   # print the layer
-  printf " %4d  %10.3e  %8.3f  %15.4e  %9.2f  %10.3f   %10.3e  %10.3e  %10.3e  %10.3e\n",
+  printf " %4d  %12.5e  %8.3f  %15.4e  %9.2f  %10.3f   %10.3e  %10.3e  %13.5e  %10.3e\n",
       i, t, r/RJ, rhoff, T, vff/1e5, t1, t2, t3, tff
   
 }  # end of main loop
