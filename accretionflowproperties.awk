@@ -198,7 +198,16 @@ if(N / log10(Ra/RP) < 10){
 print "#   More information"
 print "#     Ltot (Lsol), Tshff (K): ", Ltot/Lsol, Tshff
 
-# 
+# define time zero to be when a parcel of gas is at radius rmax
+#   there, it has a velocity v0 = vff(r0, Ra) = sqrt(2 G MP (1/r - 1/Ra))
+t0 = 0
+r0 = rmax
+
+# variables which will show up many times below
+x  = sqrt(Ra^3/(2*G*MP))
+y0 = r0/Ra
+theInt0 = theIntegral(y0)
+
 # print out every layer from outside in, from rmax down to RP
 #   apart for the numerical integration of the time,
 #   every layer is independent of the others
@@ -216,22 +225,15 @@ for(i=0;i<=N;i++){
   ## linear grid
   #r = rmax - i*(rmax-RP)/(N*1.)
   
-  # time -- t is exact and the others are approximations
-  ## 
-  ## define time zero to be when a parcel of gas is at radius rmax
-  ##   there, it has a velocity v0 = vff(r0, Ra) = sqrt(2 G MP (1/r - 1/Ra))
-  t0 = 0
-  r0 = rmax
-  ## 
-  ## variables which will show up many times below
-  x = sqrt(Ra^3/(2*G*MP))
+  ## scaled position (shows up many times below)
   y  = r/Ra
-  y0 = r0/Ra
+
+  # time -- t is exact and the others are approximations
   ##
   ## free-fall from Ra, exact, analytic
   ##  calling theIntegral() is what makes the script slow
   if(notime==0) {
-    t  = t0 + x*( theIntegral(y0) - theIntegral(y) )
+    t  = t0 + x*( theInt0 - theIntegral(y) )
   } else {
     t  = -33.  # serves as a flag
   }
